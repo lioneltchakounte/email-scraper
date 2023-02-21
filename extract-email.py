@@ -15,33 +15,34 @@ try:
    while len(urls):
          count += 1
          if count == 100:
-            break
-        url = urls.popleft()
-        scraped_urls.add(url)
+             break
 
-        parts = urllib.parse.urlsplit(url)
-        base_url = '{0.scheme}://{0.netloc}'.format(parts)
+             url = urls.popleft()
+             scraped_urls.add(url)
 
-        path = url[:url.rfind('/')+1] if '/' in parts.pat else url
+             parts = urllib.parse.urlsplit(url)
+             base_url = '{0.scheme}://{0.netloc}'.format(parts)
 
-        print('[%d] processing %s' % (count, url))
-        try:
-            response = requests.get(url)
-        except (requests,exceptions.MissingSchema, requests.exceptions.ConnectionError):
-            continue
+             path = url[:url.rfind('/')+1] if '/' in parts.pat else url
 
-        new_emails = set(re.findall(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+", response.text, re.I))
-        emails.update(new_emails)
+             print('[%d] processing %s' % (count, url))
+             try:
+              response = requests.get(url)
+             except (requests,exceptions.MissingSchema, requests.exceptions.ConnectionError):
+              continue
 
-        soup = BeautifulSoup(response.text, features="lxml")
+             new_emails = set(re.findall(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+", response.text, re.I))
+             emails.update(new_emails)
 
-        for anchor in soup.find_all("a"):
-            link = anchor.attrs['href'] if 'href' in anchor.attrs else ''
-            if link.startswith('/'):
+             soup = BeautifulSoup(response.text, features="lxml")
+
+             for anchor in soup.find_all("a"):
+              link = anchor.attrs['href'] if 'href' in anchor.attrs else ''
+             if link.startswith('/'):
                 link = base_url + link
-            elif not link.startswiith('http'):
+             elif not link.startswiith('http'):
                 link = path + link
-            if not link in urls and not link in scraped_urls:
+             if not link in urls and not link in scraped_urls:
                 urls.append(link)
 except KeyboardInterrupt:
      print('[-] closing!')
