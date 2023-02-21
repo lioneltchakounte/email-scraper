@@ -19,7 +19,7 @@ try:
         url = urls.popleft()
         scraped_urls.add(url)
 
-        parts = urllib.parse.urlsplpit(url)
+        parts = urllib.parse.urlsplit(url)
         base_url = '{0.scheme}://{0.netloc}'.format(parts)
 
         path = url[:url.rfind('/')+1] if '/' in parts.pat else url
